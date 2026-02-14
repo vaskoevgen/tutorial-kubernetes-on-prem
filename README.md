@@ -10,7 +10,15 @@ This project demonstrates how to set up a **Kubernetes Cluster (v1.35)** using `
 
 - **Docker**: You must have Docker installed and running.
 - **Root/Sudo privileges**: Required to run privileged containers.
-- **Resources**: Ensure you have enough RAM (4GB+ recommended).
+- **Resources**:
+    - **Single Node**: 4GB RAM, 2 vCPUs (Minimum)
+    - **Multi-Node**: 8GB+ RAM, 4+ vCPUs recommended for stable operation.
+
+## Configuration Profiles
+| Profile | Description | Requirements |
+|---------|-------------|--------------|
+| **Single Node** | Control Plane untainted to run workloads. Default. | 4GB RAM / 2 vCPU |
+| **Multi-Node** | Dedicated Control Plane + Worker Nodes. | 8GB RAM / 4 vCPU |
 
 ## Project Structure
 
@@ -39,6 +47,18 @@ This project demonstrates how to set up a **Kubernetes Cluster (v1.35)** using `
     - Launch `k8s-control-plane`.
     - Install Kubernetes v1.35.
     - Initialize the cluster.
+    - **Interactive Mode**: Prompts you to add Worker Nodes (Optional).
+
+## Scale Up (Add Worker Nodes)
+If you have sufficient resources, you can add worker nodes interactively during startup:
+1. Run `./start_cluster.sh`
+2. Answer `y` to "Do you want to add worker nodes?"
+3. Specify the number of workers (e.g., `1`).
+
+The script will automatically:
+- Start the worker containers.
+- Install Kubernetes.
+- Join them to the cluster.
 
 ## Interacting with the Cluster
 
