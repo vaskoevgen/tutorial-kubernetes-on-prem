@@ -1,6 +1,6 @@
-# Multi-Node Kubernetes on-prem via Docker (Tutorial)
+# Kubernetes on-prem via Docker (Tutorial)
 
-This project demonstrates how to set up a **Multi-Node Kubernetes Cluster (v1.35)** using `kubeadm` inside Docker containers.
+This project demonstrates how to set up a **Kubernetes Cluster (v1.35)** using `kubeadm` inside Docker containers.
 
 **Default Configuration:**
 - **1 Control Plane Node** (Untainted to run workloads)
@@ -14,7 +14,7 @@ This project demonstrates how to set up a **Multi-Node Kubernetes Cluster (v1.35
 
 ## Project Structure
 
-- `Dockerfile`: shared base image (Ubuntu 22.04 + systemd).
+- `Dockerfile`: shared base image (Debian Bookworm + systemd).
 - `scripts/`:
     - `install_k8s.sh`: Installs K8s v1.35 components.
     - `init_cluster.sh`: Initializes Control Plane.
@@ -72,7 +72,7 @@ kubectl get nodes
 **Expected Output:**
 ```
 NAME                STATUS   ROLES           AGE   VERSION
-k8s-control-plane   Ready    control-plane   2m    v1.31.14
+k8s-control-plane   Ready    control-plane   2m    v1.35.1
 ```
 
 
