@@ -1,0 +1,25 @@
+# Generated scripts
+scripts/join_command.sh
+
+# Kubeconfig
+kubeconfig
+
+# System files
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Logs
+*.log
+
+# Temp files
+tmp/
+*.swp
+
+# IDEs
+.idea/
+.vscode/
+
+# Secrets (precautionary)
+secrets/
+*.secret
