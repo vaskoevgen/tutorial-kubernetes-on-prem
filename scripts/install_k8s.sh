@@ -3,11 +3,16 @@ set -e
 
 echo "Starting Kubernetes installation..."
 
-# 1. Install Containerd from Docker repo (for latest version)
+# 1. Install Containerd from Docker repo
 echo "Installing containerd..."
 apt-get update
-apt-get install -y ca-certificates curl gnupg
+# Install strict dependencies for GPG
+apt-get install -y ca-certificates curl gnupg lsb-release
+
 install -m 0755 -d /etc/apt/keyrings
+if [ -f /etc/apt/keyrings/docker.gpg ]; then
+    rm /etc/apt/keyrings/docker.gpg
+fi
 curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
 chmod a+r /etc/apt/keyrings/docker.gpg
 
@@ -50,7 +55,11 @@ sysctl --system
 echo "Installing kubeadm, kubelet, kubectl..."
 # Download the public signing key for the Kubernetes package repositories
 mkdir -p /etc/apt/keyrings
-curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.35/deb/Release.key | gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+if [ -f /etc/apt/keyrings/kubernetes-apt-keyring.gpg ]; then
+    rm /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+fi
+# Using --yes to assume yes on gpg key prompts if any
+curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.35/deb/Release.key | gpg --dearmor --yes -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
 
 # Add the appropriate Kubernetes apt repository
 echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.35/deb/ /' | tee /etc/apt/sources.list.d/kubernetes.list

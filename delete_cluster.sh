@@ -3,11 +3,17 @@
 echo "Deleting Kubernetes Cluster..."
 
 # Names of the containers
-CONTAINERS="k8s-control-plane k8s-node"
+# Find all containers starting with k8s-
+CONTAINERS=$(docker ps -a --filter "name=k8s-" --format "{{.Names}}")
 
 # Delete containers
-echo "Removing containers: $CONTAINERS"
-docker rm -f $CONTAINERS 2>/dev/null || true
+if [ -n "$CONTAINERS" ]; then
+    echo "Removing containers:"
+    echo "$CONTAINERS"
+    docker rm -f $CONTAINERS
+else
+    echo "No k8s containers found."
+fi
 
 # Delete network
 NETWORK_NAME="k8s-net"

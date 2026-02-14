@@ -59,6 +59,37 @@ echo "Initializing Cluster..."
 docker exec k8s-control-plane /scripts/init_cluster.sh
 
 echo "Setup complete!"
+
+# 4. Interactive Worker Setup
+read -p "Do you want to add worker nodes? [y/N]: " add_workers
+if [[ "$add_workers" =~ ^[Yy]$ ]]; then
+    read -p "How many worker nodes? [1]: " worker_count
+    worker_count=${worker_count:-1}
+
+    # Get join command
+    echo "Generating join command..."
+    JOIN_CMD=$(docker exec k8s-control-plane kubeadm token create --print-join-command)
+
+    for i in $(seq 1 $worker_count); do
+        WORKER_NAME="k8s-worker-$i"
+        
+        # Cleanup if exists
+        docker rm -f $WORKER_NAME 2>/dev/null || true
+
+        echo "Starting worker node: $WORKER_NAME"
+        run_node "$WORKER_NAME" ""
+        
+        echo "Installing Kubernetes on $WORKER_NAME..."
+        docker exec $WORKER_NAME /scripts/install_k8s.sh
+
+        echo "Joining $WORKER_NAME to the cluster..."
+        # Add --ignore-preflight-errors=all to the join command
+        JOIN_CMD_SAFE="${JOIN_CMD} --ignore-preflight-errors=all"
+        docker exec $WORKER_NAME $JOIN_CMD_SAFE
+    done
+fi
+
+echo "All requested nodes started."
 echo "To access the cluster:"
 echo "1. Copy kubeconfig: docker cp k8s-control-plane:/etc/kubernetes/admin.conf ./kubeconfig"
 echo "   export KUBECONFIG=$(pwd)/kubeconfig"
